@@ -2,6 +2,8 @@ import streamlit as st
 import tensorflow as tf
 import gdown
 import os
+from PIL import Image
+
 
 @st.cache_resource
 def load_model():
