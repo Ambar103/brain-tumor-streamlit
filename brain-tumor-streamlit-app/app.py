@@ -5,44 +5,41 @@ from PIL import Image
 import gdown
 import os
 
-# ------------------------------
-# Title
-st.title("Brain Tumor MRI Classification")
-st.write("Upload an MRI image to classify the type of brain tumor using EfficientNetB0 model.")
-
-# ------------------------------
-# Download model from Google Drive
+# Load model from Google Drive (only once)
 @st.cache_resource
 def load_model():
-    model_url = "https://drive.google.com/uc?id=1aIXL1fPUUGoA4r9eBhd6ORuh1HVcYqpd"  # Replace with your file ID
     model_path = "efficientnetb0_model.h5"
     if not os.path.exists(model_path):
-        gdown.download(model_url, model_path, quiet=False)
-    model = tf.keras.models.load_model(model_path)
+        file_id = "1aIXL1fPUUGoA4r9eBhd6ORuh1HVcYqpd"  # Replace this
+        url = f"https://drive.google.com/uc?id={file_id}"
+        gdown.download(url, model_path, quiet=False)
+    model = tf.keras.models.load_model(model_path, compile=False)
     return model
 
-model = load_model()
+# Preprocess uploaded image
+def preprocess_image(image):
+    image = image.resize((224, 224))
+    img_array = tf.keras.utils.img_to_array(image)
+    img_array = tf.expand_dims(img_array, axis=0)
+    img_array /= 255.0
+    return img_array
 
-# ------------------------------
-# Label map
-CLASS_NAMES = ['Glioma Tumor', 'Meningioma Tumor', 'No Tumor', 'Pituitary Tumor']
+# UI
+st.title("Brain Tumor MRI Classifier")
+st.write("Upload an MRI image to predict tumor class.")
 
-# ------------------------------
-# Image upload
-uploaded_file = st.file_uploader("Upload MRI Image", type=["jpg", "jpeg", "png"])
+uploaded_file = st.file_uploader("Choose an image", type=["jpg", "jpeg", "png"])
 
-if uploaded_file is not None:
-    image = Image.open(uploaded_file).convert('RGB')
-    st.image(image, caption='Uploaded MRI Image', use_column_width=True)
+if uploaded_file:
+    image = Image.open(uploaded_file).convert("RGB")
+    st.image(image, caption="Uploaded Image", use_column_width=True)
+    
+    with st.spinner("Loading model and predicting..."):
+        model = load_model()
+        processed = preprocess_image(image)
+        predictions = model.predict(processed)
+        predicted_class = np.argmax(predictions, axis=1)[0]
+        confidence = np.max(predictions)
 
-    # Preprocess image
-    img = image.resize((224, 224))
-    img_array = np.array(img) / 255.0
-    img_array = np.expand_dims(img_array, axis=0)
-
-    # Prediction
-    prediction = model.predict(img_array)
-    predicted_class = CLASS_NAMES[np.argmax(prediction)]
-
-    st.markdown("### 🧾 Prediction:")
-    st.success(f"**{predicted_class}**")
+    classes = ["Glioma", "Meningioma", "No Tumor", "Pituitary"]  # Change to your actual class names
+    st.success(f"Predicted: {classes[predicted_class]} ({confidence:.2f} confidence)")
