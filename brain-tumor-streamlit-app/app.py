@@ -2,39 +2,41 @@ import streamlit as st
 import tensorflow as tf
 import numpy as np
 from PIL import Image
+import gdown
+import os
 
-# Set up title and description
-st.title("Brain Tumor MRI Classification")
-st.write("Upload a brain MRI scan image and classify tumor type using EfficientNetB0 model.")
+st.set_page_config(page_title="Brain Tumor Classification", layout="centered")
 
-# Load the trained model
-@st.cache_resource
-def load_model():
-    model = tf.keras.models.load_model("efficientnetb0_model.keras")
-    return model
+# Download the model from Google Drive using gdown
+model_path = "efficientnetb0_model.keras"
+if not os.path.exists(model_path):
+    with st.spinner("Downloading model..."):
+        url = "https://drive.google.com/uc?id=1oDoZko1JrCbUxr0MYe9x1-FtoeyLkEqJ"  # Replace with your File ID
+        gdown.download(url, model_path, quiet=False)
 
-model = load_model()
+# Load the model
+model = tf.keras.models.load_model(model_path)
+class_names = ['Glioma', 'Meningioma', 'No Tumor', 'Pituitary']
 
-# Define class names (edit if yours are different)
-class_names = ['Glioma Tumor', 'Meningioma Tumor', 'No Tumor', 'Pituitary Tumor']
+st.title(" Brain Tumor MRI Classification")
+st.markdown("Upload a brain MRI image and get the tumor prediction.")
 
-# Image upload
-uploaded_file = st.file_uploader("Upload an MRI image", type=["jpg", "jpeg", "png"])
+# Upload image
+uploaded_file = st.file_uploader("Choose a brain MRI image...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
-    image = Image.open(uploaded_file).convert("RGB")
-    st.image(image, caption="Uploaded Image", use_column_width=True)
+    image = Image.open(uploaded_file).convert('RGB')
+    st.image(image, caption='Uploaded Image', use_column_width=True)
 
     # Preprocess image
-    img = image.resize((224, 224))
-    img_array = np.expand_dims(np.array(img) / 255.0, axis=0)
+    image = image.resize((224, 224))
+    image_array = tf.keras.preprocessing.image.img_to_array(image)
+    image_array = np.expand_dims(image_array / 255.0, axis=0)  # Normalize
 
     # Prediction
-    prediction = model.predict(img_array)[0]
-    predicted_class = class_names[np.argmax(prediction)]
+    prediction = model.predict(image_array)
+    pred_class = class_names[np.argmax(prediction)]
     confidence = np.max(prediction)
 
-    # Display result
-    st.subheader("Prediction")
-    st.write(f"**Tumor Type:** {predicted_class}")
-    st.write(f"**Confidence:** {confidence:.2%}")
+    st.success(f"### 🧪 Predicted: `{pred_class}`")
+    st.info(f"Confidence: `{confidence * 100:.2f}%`")
