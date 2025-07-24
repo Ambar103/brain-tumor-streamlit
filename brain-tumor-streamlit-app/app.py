@@ -9,7 +9,7 @@ import os
 def load_model():
     model_path = "efficientnetb0_model.keras"
     if not os.path.exists(model_path):
-        file_id = 1JqarGvmPU4-r6Vub5QlWfCg1a9VFqsVB  # Replace this
+        file_id = "1JqarGvmPU4-r6Vub5QlWfCg1a9VFqsVB"  # Replace this
         url = f"https://drive.google.com/uc?id={file_id}"
         gdown.download(url, model_path, quiet=False)
     return tf.keras.models.load_model(model_path, compile=False)
@@ -38,3 +38,17 @@ if uploaded_file:
 
     classes = ["Glioma", "Meningioma", "No Tumor", "Pituitary"]
     st.success(f"Prediction: {classes[predicted_class]} (Confidence: {confidence:.2f})")
+
+
+import gdown
+import os
+
+@st.cache_resource
+def load_model():
+    model_path = "efficientnetb0_model.keras"
+    if not os.path.exists(model_path):
+        file_id = "1JqarGvmPU4-r6Vub5QlWfCg1a9VFqsVB"
+        gdown.download(f"https://drive.google.com/uc?id={file_id}", model_path, quiet=False)
+    model = tf.keras.models.load_model(model_path, compile=False)
+    return model
+
