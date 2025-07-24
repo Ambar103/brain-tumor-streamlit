@@ -1,18 +1,16 @@
 import streamlit as st
 import tensorflow as tf
-import numpy as np
-from PIL import Image
 import gdown
 import os
 
 @st.cache_resource
 def load_model():
-    model_path = "efficientnetb0_model.keras"
+    model_path = "efficientnetb0_model.h5"
     if not os.path.exists(model_path):
-        file_id = "1JqarGvmPU4-r6Vub5QlWfCg1a9VFqsVB"  # Replace this
-        url = f"https://drive.google.com/uc?id={file_id}"
-        gdown.download(url, model_path, quiet=False)
-    return tf.keras.models.load_model(model_path, compile=False)
+        file_id = "1aIXL1fPUUGoA4r9eBhd6ORuh1HVcYqpd"  # Replace with the new file ID
+        gdown.download(f"https://drive.google.com/uc?id={file_id}", model_path, quiet=False)
+    model = tf.keras.models.load_model(model_path)
+    return model
 
 def preprocess_image(image):
     image = image.resize((224, 224))
