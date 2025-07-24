@@ -14,7 +14,7 @@ st.write("Upload an MRI image to classify the type of brain tumor using Efficien
 # Download model from Google Drive
 @st.cache_resource
 def load_model():
-    model_url = "https://drive.google.com/uc?id=1oDoZko1JrCbUxr0MYe9x1-FtoeyLkEqJ"  # Replace with your file ID
+    model_url = "https://drive.google.com/uc?id=1aIXL1fPUUGoA4r9eBhd6ORuh1HVcYqpd"  # Replace with your file ID
     model_path = "efficientnetb0_model.h5"
     if not os.path.exists(model_path):
         gdown.download(model_url, model_path, quiet=False)
