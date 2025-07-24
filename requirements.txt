@@ -1,6 +1,5 @@
-streamlit
+streamlit==1.27.2
 tensorflow==2.12.0
 gdown
 numpy
-pillow
-matplotlib
+Pillow
