@@ -3,6 +3,8 @@
 ## Overview
 This project is a brain tumor MRI classifier built using Streamlit, a powerful framework for creating web applications in Python. It leverages deep learning techniques to analyze MRI images and predict the presence of brain tumors.
 
+LINK TO TRY IT OUT : https://brain-tumor-app-cbtaz6mjq8x6lc9mquzkcj.streamlit.app/
+
 ## Table of Contents
 - [Installation](#installation)
 - [Usage](#usage)
