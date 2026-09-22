@@ -1,7 +1,6 @@
 __pycache__/
 *.pyc
 .venv/
-app_test_venv/
-training/.venv/
+*venv*/
 training/artifacts/*.keras
 training/artifacts/checkpoint.keras

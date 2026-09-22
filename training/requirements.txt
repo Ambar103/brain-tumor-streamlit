@@ -1,4 +1,5 @@
 tensorflow==2.16.1
+keras==3.12.4
 kagglehub
 scikit-learn
 matplotlib
